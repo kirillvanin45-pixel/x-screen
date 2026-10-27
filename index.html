@@ -3,45 +3,110 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>X SCREEN</title>
+<title>X Screen</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  html,body{margin:0;height:100%;background:#000;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
-  .wrap{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center}
-  #time{font-size:22vw;font-weight:bold;color:#c6ff00;line-height:1}
-  #date{font-size:4vw;margin-top:1vw;text-transform:uppercase;letter-spacing:.3vw;color:#aaa}
-  #weather{font-size:5vw;margin-top:4vw}
-  .brand{position:fixed;bottom:2vw;right:3vw;font-size:2vw;color:#c6ff00;letter-spacing:.5vw}
+:root{--lime:#c6ff3d;--text:#f2f5ee;--muted:#9aa39a;--card:rgba(255,255,255,0.06);--line:rgba(198,255,61,0.18);--bg1:#050607;--bg2:#0b0f0c}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{color:var(--text);font-family:Manrope,sans-serif;overflow:hidden;background:radial-gradient(ellipse at 15% 20%,rgba(198,255,61,0.10),transparent 55%),linear-gradient(160deg,var(--bg2),var(--bg1))}
+.wrap{position:relative;z-index:2;height:100vh;display:grid;grid-template-columns:1.25fr 1fr;gap:3vw;padding:4vw}
+.left{display:flex;flex-direction:column;justify-content:space-between}
+.brand{font-family:Unbounded;font-size:1.3vw;letter-spacing:.3em;color:var(--lime);opacity:.8}
+.clock{font-family:Unbounded;font-weight:700;font-size:15vw;line-height:.9;color:var(--lime);text-shadow:0 0 4vw rgba(198,255,61,.35)}
+.clock .sec{font-size:4vw;color:var(--text);opacity:.5;margin-left:1vw}
+.date{font-size:2.4vw;font-weight:600;margin-top:1.5vw;text-transform:capitalize}
+.count{background:var(--card);border:1px solid var(--line);border-radius:1.6vw;padding:1.8vw 2.2vw;display:flex;align-items:center;gap:2vw}
+.count .num{font-family:Unbounded;font-size:5vw;color:var(--lime);line-height:1}
+.count .lbl{font-size:1.6vw;color:var(--muted)}
+.count .lbl b{display:block;color:var(--text);font-size:2vw}
+.right{display:flex;flex-direction:column;gap:2vw;justify-content:center}
+.card{background:var(--card);border:1px solid var(--line);border-radius:1.6vw;padding:2vw 2.2vw}
+.title{font-size:1.2vw;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:1vw}
+.now{display:flex;align-items:center;gap:2vw}
+.now .ico{font-size:6vw;line-height:1}
+.now .t{font-family:Unbounded;font-size:5.5vw;line-height:1}
+.now .d{font-size:1.5vw;color:var(--muted);margin-top:.6vw}
+.days{display:grid;grid-template-columns:repeat(3,1fr);gap:1vw;margin-top:1.6vw;padding-top:1.6vw;border-top:1px solid var(--line)}
+.day{text-align:center}
+.day .n{font-size:1.3vw;color:var(--muted);text-transform:capitalize}
+.day .i{font-size:2.6vw;margin:.4vw 0}
+.day .r{font-size:1.5vw;font-weight:700}
+.day .r span{color:var(--muted);font-weight:400}
+.fx{display:grid;grid-template-columns:1fr 1fr;gap:1vw}
+.fx .cur{font-size:1.4vw;color:var(--muted)}
+.fx .val{font-family:Unbounded;font-size:3vw;margin-top:.3vw}
+.fx .ch{font-size:1.3vw;margin-top:.3vw}
+.up{color:#ff6b6b}.down{color:var(--lime)}
+.flake{position:fixed;top:-2vh;z-index:1;color:#fff;opacity:.7;pointer-events:none;animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(105vh) translateX(3vw)}}
+@media (max-aspect-ratio:1/1){
+body{overflow:auto}
+.wrap{grid-template-columns:1fr;height:auto;padding:6vw 4vw;gap:5vw}
+.brand{font-size:3vw}.clock{font-size:26vw}.clock .sec{font-size:8vw}.date{font-size:5vw}
+.count .num{font-size:12vw}.count .lbl{font-size:3.5vw}.count .lbl b{font-size:4.5vw}
+.count,.card{border-radius:4vw;padding:5vw}
+.title{font-size:3vw;margin-bottom:3vw}
+.now .ico{font-size:14vw}.now .t{font-size:12vw}.now .d{font-size:3.5vw}
+.day .n{font-size:3.2vw}.day .i{font-size:7vw}.day .r{font-size:3.8vw}
+.fx .cur{font-size:3.5vw}.fx .val{font-size:7vw}.fx .ch{font-size:3.2vw}
+.left{gap:5vw}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div id="time">--:--</div>
-  <div id="date"></div>
-  <div id="weather">Загрузка погоды...</div>
+<div class="left">
+<div class="brand">X · SCREEN · НОВОСИБИРСК</div>
+<div><div class="clock"><span id="hm">--:--</span><span class="sec" id="s">--</span></div><div class="date" id="date"></div></div>
+<div class="count" id="count"><div class="num" id="days">--</div><div class="lbl"><b id="countTitle">дней до приезда мамы</b><span id="countSub">31 декабря</span></div></div>
 </div>
-<div class="brand">X</div>
+<div class="right">
+<div class="card"><div class="title">Погода сейчас</div>
+<div class="now"><div class="ico" id="ico">…</div><div><div class="t" id="temp">--°</div><div class="d" id="desc">Загрузка…</div></div></div>
+<div class="days" id="forecast"></div></div>
+<div class="card"><div class="title">Курс ЦБ</div>
+<div class="fx"><div><div class="cur">$ Доллар</div><div class="val" id="usd">--</div><div class="ch" id="usdCh"></div></div>
+<div><div class="cur">€ Евро</div><div class="val" id="eur">--</div><div class="ch" id="eurCh"></div></div></div></div>
+</div>
+</div>
 <script>
-  function tick(){
-    var d=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Novosibirsk'}));
-    document.getElementById('time').textContent=
-      String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-    document.getElementById('date').textContent=
-      d.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});
-  }
-  var codes={0:'Ясно',1:'Почти ясно',2:'Облачно',3:'Пасмурно',45:'Туман',48:'Туман',
-    51:'Морось',53:'Морось',55:'Морось',61:'Дождь',63:'Дождь',65:'Ливень',
-    71:'Снег',73:'Снег',75:'Сильный снег',77:'Снег',80:'Ливень',81:'Ливень',82:'Ливень',
-    85:'Снегопад',86:'Снегопад',95:'Гроза'};
-  function weather(){
-    fetch('https://api.open-meteo.com/v1/forecast?latitude=55.03&longitude=82.92&current=temperature_2m,weather_code&timezone=Asia/Novosibirsk')
-      .then(r=>r.json()).then(j=>{
-        var t=Math.round(j.current.temperature_2m);
-        document.getElementById('weather').textContent=
-          'Новосибирск  '+(t>0?'+':'')+t+'°  '+(codes[j.current.weather_code]||'');
-      }).catch(()=>{});
-  }
-  tick();weather();
-  setInterval(tick,1000);setInterval(weather,600000);
+const TZ='Asia/Novosibirsk',MOM_DATE='2026-12-31';
+function $(i){return document.getElementById(i);}
+function nskNow(){return new Date(new Date().toLocaleString('en-US',{timeZone:TZ}));}
+function tick(){const n=nskNow();$('hm').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');$('s').textContent=String(n.getSeconds()).padStart(2,'0');$('date').textContent=n.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});}
+setInterval(tick,1000);tick();
+function setBg(){const h=nskNow().getHours(),r=document.documentElement.style;
+if(h>=6&&h<11){r.setProperty('--bg1','#060a14');r.setProperty('--bg2','#10203d');}
+else if(h>=11&&h<17){r.setProperty('--bg1','#070d12');r.setProperty('--bg2','#13242f');}
+else if(h>=17&&h<22){r.setProperty('--bg1','#08060f');r.setProperty('--bg2','#21123a');}
+else{r.setProperty('--bg1','#030404');r.setProperty('--bg2','#0a0d0b');}}
+setInterval(setBg,600000);setBg();
+function plural(n,a,b,c){const m=n%10,h=n%100;return(m===1&&h!==11)?a:(m>=2&&m<=4&&(h<12||h>14))?b:c;}
+function countdown(){const n=nskNow();n.setHours(0,0,0,0);const d=Math.round((new Date(MOM_DATE+'T00:00:00')-n)/86400000);
+if(d>0){$('days').textContent=d;$('countTitle').textContent=plural(d,'день','дня','дней')+' до приезда мамы';}
+else if(d===0){$('days').textContent='🎉';$('countTitle').textContent='Мама приезжает сегодня!';$('countSub').textContent='';}
+else{$('count').style.display='none';}}
+setInterval(countdown,600000);countdown();
+const W={0:['☀️','Ясно'],1:['🌤','Почти ясно'],2:['⛅','Облачно'],3:['☁️','Пасмурно'],45:['🌫','Туман'],48:['🌫','Изморозь'],51:['🌦','Морось'],53:['🌦','Морось'],55:['🌦','Морось'],61:['🌧','Дождь'],63:['🌧','Дождь'],65:['🌧','Ливень'],66:['🌧','Ледяной дождь'],67:['🌧','Ледяной дождь'],71:['🌨','Снег'],73:['🌨','Снег'],75:['❄️','Снегопад'],77:['🌨','Снежная крупа'],80:['🌦','Ливень'],81:['🌧','Ливень'],82:['⛈','Сильный ливень'],85:['🌨','Снегопад'],86:['❄️','Сильный снегопад'],95:['⛈','Гроза'],96:['⛈','Гроза'],99:['⛈','Гроза']};
+const SNOW=[71,73,75,77,85,86];
+function w(c){return W[c]||['🌡','—'];}
+async function weather(){try{
+const j=await(await fetch('https://api.open-meteo.com/v1/forecast?latitude=55.03&longitude=82.92&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&wind_speed_unit=ms&timezone=Asia%2FNovosibirsk&forecast_days=4')).json();
+const c=j.current,x=w(c.weather_code);
+$('ico').textContent=x[0];$('temp').textContent=Math.round(c.temperature_2m)+'°';
+$('desc').textContent=x[1]+' · ощущается '+Math.round(c.apparent_temperature)+'° · ветер '+Math.round(c.wind_speed_10m)+' м/с';
+let h='';for(let i=1;i<=3;i++){const d=new Date(j.daily.time[i]+'T12:00:00');
+h+='<div class="day"><div class="n">'+d.toLocaleDateString('ru-RU',{weekday:'short'})+'</div><div class="i">'+w(j.daily.weather_code[i])[0]+'</div><div class="r">'+Math.round(j.daily.temperature_2m_max[i])+'° <span>'+Math.round(j.daily.temperature_2m_min[i])+'°</span></div></div>';}
+$('forecast').innerHTML=h;snow(SNOW.includes(c.weather_code));
+}catch(e){$('desc').textContent='Нет связи, обновлю позже';}}
+setInterval(weather,600000);weather();
+function snow(on){document.querySelectorAll('.flake').forEach(f=>f.remove());if(!on)return;
+for(let i=0;i<30;i++){const f=document.createElement('div');f.className='flake';f.textContent='❄';f.style.left=Math.random()*100+'vw';f.style.fontSize=(0.6+Math.random()*1.2)+'vw';f.style.animationDuration=(8+Math.random()*10)+'s';f.style.animationDelay=(-Math.random()*15)+'s';document.body.appendChild(f);}}
+async function rates(){try{const j=await(await fetch('https://www.cbr-xml-daily.ru/daily_json.js')).json();
+[['USD','usd'],['EUR','eur']].forEach(function(p){const v=j.Valute[p[0]],diff=v.Value-v.Previous;
+$(p[1]).textContent=v.Value.toFixed(2)+' ₽';const ch=$(p[1]+'Ch');
+ch.textContent=(diff>=0?'▲ +':'▼ ')+diff.toFixed(2)+' за день';ch.className='ch '+(diff>=0?'up':'down');});}catch(e){}}
+setInterval(rates,3600000);rates();
 </script>
 </body>
 </html>
