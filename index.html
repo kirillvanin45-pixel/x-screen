@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X SCREEN</title>
+<style>
+  html,body{margin:0;height:100%;background:#000;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
+  .wrap{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center}
+  #time{font-size:22vw;font-weight:bold;color:#c6ff00;line-height:1}
+  #date{font-size:4vw;margin-top:1vw;text-transform:uppercase;letter-spacing:.3vw;color:#aaa}
+  #weather{font-size:5vw;margin-top:4vw}
+  .brand{position:fixed;bottom:2vw;right:3vw;font-size:2vw;color:#c6ff00;letter-spacing:.5vw}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="time">--:--</div>
+  <div id="date"></div>
+  <div id="weather">Загрузка погоды...</div>
+</div>
+<div class="brand">X</div>
+<script>
+  function tick(){
+    var d=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Novosibirsk'}));
+    document.getElementById('time').textContent=
+      String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    document.getElementById('date').textContent=
+      d.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});
+  }
+  var codes={0:'Ясно',1:'Почти ясно',2:'Облачно',3:'Пасмурно',45:'Туман',48:'Туман',
+    51:'Морось',53:'Морось',55:'Морось',61:'Дождь',63:'Дождь',65:'Ливень',
+    71:'Снег',73:'Снег',75:'Сильный снег',77:'Снег',80:'Ливень',81:'Ливень',82:'Ливень',
+    85:'Снегопад',86:'Снегопад',95:'Гроза'};
+  function weather(){
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=55.03&longitude=82.92&current=temperature_2m,weather_code&timezone=Asia/Novosibirsk')
+      .then(r=>r.json()).then(j=>{
+        var t=Math.round(j.current.temperature_2m);
+        document.getElementById('weather').textContent=
+          'Новосибирск  '+(t>0?'+':'')+t+'°  '+(codes[j.current.weather_code]||'');
+      }).catch(()=>{});
+  }
+  tick();weather();
+  setInterval(tick,1000);setInterval(weather,600000);
+</script>
+</body>
+</html>
